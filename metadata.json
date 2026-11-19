@@ -1,0 +1,6 @@
+{
+  "name": "Timber Wings: Forest Flyer",
+  "description": "A 2D forest flying arcade game built with Phaser 3, featuring wooden tree-trunk obstacles, multi-layer parallax pine forest, orange cartoon bird, and Web Audio sound effects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Android generated outputs and local secrets (keep android/ project tracked in Git)
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+*.apk
+*.aab
+*.jks
+*.keystore

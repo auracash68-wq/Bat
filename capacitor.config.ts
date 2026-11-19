@@ -1,0 +1,15 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.example.timberwing',
+  appName: 'Timber Wing',
+  webDir: 'dist',
+  backgroundColor: '#1a1008',
+  android: {
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
+  },
+};
+
+export default config;
