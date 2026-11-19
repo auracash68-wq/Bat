@@ -97,7 +97,8 @@ export const MenuUI: React.FC<MenuUIProps> = ({
         </div>
       </div>
 
-      <div className="h-4" />
+      {/* Safe bottom clearance for Home Screen AdMob Banner */}
+      <div className="h-14 sm:h-16 shrink-0 pointer-events-none" />
     </div>
   );
 };

@@ -30,6 +30,7 @@ export class GameScene extends Phaser.Scene {
   // Pooled obstacles
   private obstaclePool: ObstaclePair[] = [];
   private lastGapCenterY: number = 460;
+  private hasRevivedThisRun: boolean = false;
 
   // Particle emitter for flap puffs and collision feathers
   private featherParticles!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -194,6 +195,7 @@ export class GameScene extends Phaser.Scene {
 
   public startNewGame(): void {
     this.scoreSystem.reset();
+    this.hasRevivedThisRun = false;
     SaveManager.incrementFlights();
     this.bird.reset(GameScene.BIRD_X, GameScene.BIRD_START_Y);
 
@@ -225,9 +227,49 @@ export class GameScene extends Phaser.Scene {
 
   public returnToHome(): void {
     this.scoreSystem.reset();
+    this.hasRevivedThisRun = false;
     this.bird.reset(GameScene.BIRD_X, GameScene.BIRD_START_Y);
     this.setupReadyPreviewObstacles();
     this.stateManager.setState(GameState.READY);
+  }
+
+  public canReviveCurrentRun(): boolean {
+    return !this.hasRevivedThisRun;
+  }
+
+  public reviveAfterRewardedAd(): void {
+    if (this.stateManager.getState() !== GameState.GAME_OVER || this.hasRevivedThisRun) {
+      return;
+    }
+    this.hasRevivedThisRun = true;
+
+    const currentScore = this.scoreSystem.getScore();
+    const diff = DifficultySystem.getConfigForScore(currentScore);
+
+    // Reposition obstacles safely ahead of the bird so it doesn't immediately re-collide
+    let rightmostX = 0;
+    for (const pair of this.obstaclePool) {
+      if (pair.active && pair.x > rightmostX) {
+        rightmostX = pair.x;
+      }
+    }
+
+    for (const pair of this.obstaclePool) {
+      if (!pair.active) continue;
+      if (pair.x > GameScene.BIRD_X - 240 && pair.x < GameScene.BIRD_X + 380) {
+        const nextX = Math.max(GameScene.SCENE_WIDTH + 140, rightmostX + diff.horizontalSpacing);
+        const nextGapY = this.computeNextFairGapY(diff.gapHeight);
+        pair.spawn(nextX, nextGapY, diff.gapHeight);
+        rightmostX = nextX;
+      }
+    }
+
+    // Place bird at a safe mid-sky altitude and flap upward to continue the run
+    this.bird.reset(GameScene.BIRD_X, 460);
+    this.stateManager.setState(GameState.PLAYING);
+    this.bird.flap();
+    this.emitFlapFeathers();
+    AudioManager.getInstance().startMusic();
   }
 
   public pauseGame(): void {
