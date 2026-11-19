@@ -40,9 +40,17 @@ jobs:
           java-version: '21'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
-          packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+          packages: platform-tools
+
+      - name: Accept Android SDK licenses non-interactively
+        shell: bash
+        run: |
+          set -eo pipefail
+          (yes || true) | sdkmanager --licenses > /dev/null
 
       - name: Setup Gradle with Dependency Caching
         uses: gradle/actions/setup-gradle@v4
